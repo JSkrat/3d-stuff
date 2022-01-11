@@ -10,6 +10,12 @@ $fn = 45; //*/
 ///   it is a screw length for conical headed screw
 ///   or a length of a threaded part of a screw for non-conical headed screws
 /// suffix _h means it has conical head, flat to the surface
+///
+/// bolt naming is
+/// bolt_threadD_headD_headH
+/// threadD is thread diameter, in mm (for M4 it is just 4)
+/// headD is head diameter, in 1/10mm
+/// headH is head height, in 1/10mm, from inner flat surface to the upper most part
 
 module screw_40_15(positive) {
     if (positive) {
@@ -28,19 +34,20 @@ module screw_40_15(positive) {
     }
 }
 
-
+screw_25_10_h_bushing_d = 8;
+screw_25_10_h_bushing_h = 11 - wall-tolerance*0;
 module screw_25_10_h(positive) {
     if (positive) {
         mirror([0, 0, 1])
         color("#444")
         translate([0, 0, wall+tolerance*0])
-        cylinder(d = 8, h = 12 - wall-tolerance*0);
+        cylinder(d = screw_25_10_h_bushing_d, h = screw_25_10_h_bushing_h);
     } else {
         color("#DE8") {
             mirror([0, 0, 1]) {
                 translate([0, 0, -t])
                 cylinder(d1 = 4.8, d2 = 4.72, h = t*2);
-                cylinder(d1 = 4.8, d2 = 2.8, h = 1.4);
+                cylinder(d1 = 4.8, d2 = 2.8, h = 1.4 + t*2);
                 translate([0, 0, 1.4])
                 cylinder(d1 = 2.8, d2 = 2.0, h = 1.11);
                 cylinder(h = 10, d = 1.5 + tolerance*2);        
@@ -49,6 +56,20 @@ module screw_25_10_h(positive) {
     }
 }
 
+module bolt_M5_114_30(positive, length) {
+    if (positive) {
+    } else {
+        color("silver") {
+            mirror([0, 0, 1])
+            translate([0, 0, -t])
+            cylinder(d = 5 + tolerance*2, h = length + tolerance);
+            cylinder(d = 11.4 + tolerance*2, h = 3 + tolerance);
+        }
+    }
+}
+
+// a single electrode from cheap 220 connector
+// has a screw to connect a wire into it
 module socket_pin_220(positive) {
     d = 4.5 + tolerance*2;
     if (positive) {
@@ -84,3 +105,4 @@ module socket_pin_220(positive) {
 
 //socket_pin_220(false);
 //screw_25_10_h(false);
+//bolt_M5_114_30(false, 10);
