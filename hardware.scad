@@ -56,6 +56,49 @@ module screw_25_10_h(positive) {
     }
 }
 
+screw_25_16_bushing_d = 8;
+screw_25_16_bushing_h = 17;
+module screw_25_16(positive) {
+    if (positive) {
+        mirror([0, 0, 1])
+        color("#444")
+        translate([0, 0, 0])
+        cylinder(d = screw_25_16_bushing_d, h = screw_25_16_bushing_h);
+    } else {
+        color("silver") {
+            // head
+            cylinder(d = 4.8, h = 2);
+            mirror([0, 0, 1]) {
+                cylinder(d = 1.5 + tolerance*2, h = 16.5);
+                // neck
+                cylinder(d1=3, d2 = 1.5+tolerance*2, h = 1);
+            }
+        }
+    }
+}
+
+screw_25_10_bushing_d = 8;
+screw_25_10_bushing_h = 11 - wall-tolerance*0;
+module screw_25_10(positive) {
+    if (positive) {
+        mirror([0, 0, 1])
+        color("#444")
+        translate([0, 0, 0])
+        cylinder(d = screw_25_10_bushing_d, h = screw_25_10_bushing_h);
+    } else {
+        color([0.7, 0.7, 0.7, 0.5]) {
+            // head
+            translate([0, 0, -t])
+            cylinder(d = 4.8, h = 2+t);
+            mirror([0, 0, 1]) {
+                cylinder(d = 1.5 + tolerance*2, h = 10);
+                // neck
+                cylinder(d1=3, d2 = 1.5+tolerance*2, h = 1);
+            }
+        }
+    }
+}
+
 module bolt_M5_114_30(positive, length) {
     if (positive) {
     } else {
@@ -103,6 +146,31 @@ module socket_pin_220(positive) {
     }
 }
 
+// саморізи
+module st_screw(length, positive) {
+    if (positive) {
+        color("#444")
+        translate([0, 0, t])
+        cylinder(d = 10, h = length + wall);
+    } else {
+        mirror([0, 0, 1])
+        color("#333") {
+            translate([0, 0, -t])
+            cylinder(d = 7.9+tolerance*2, h = 0.4+t);
+            translate([0, 0, 0.4-t])
+            cylinder(d1 = 7.9+tolerance*2, d2 = 3.6+tolerance*2, h = 2.2+t);
+            translate([0, 0, 2.6-t])
+            cylinder(d1 = 3.6+tolerance*2, d2 = 2.4+tolerance*2, h = 1.8+t);
+            cylinder(d = 2.6, h = length);
+            
+        }
+    }
+}
+
+module st_screw_15(positive) {
+    st_screw(16.1, positive);
+}
+
 //socket_pin_220(false);
-//screw_25_10_h(false);
+//screw_25_16(false);
 //bolt_M5_114_30(false, 10);
