@@ -221,5 +221,57 @@ module amplifier_pam8403() {
     cube([5.4, 2.54, t]);
 }
 
+module led_stripe_60(sections, real) {
+    c = (real)? 0: tolerance;
+    // 60 leds per meter, 3 leds per section
+    leds_per_section = 3;
+    pcb_h = 0.2;
+    pcb_l = 10 + c*2;
+    pcb_w = 50;
+    for (section = [0:sections-1]) {
+        translate([pcb_w*section, 0, 0]) {
+            // pcb
+            color("#EEE")
+            cube([pcb_w, pcb_l, pcb_h]);
+            // contacts
+            contact_l = 1.8;
+            color("gold")
+            for (i = [0:3]) {
+                translate([0, i*2.5, pcb_h])
+                cube([2.5-contact_l/2, contact_l, t]);
+                translate([2.5-contact_l/2, i*2.5 + contact_l/2, pcb_h])
+                cylinder(d = contact_l, h = t);
+                translate([pcb_w - 2.5+contact_l/2, i*2.5, pcb_h])
+                cube([2.5-contact_l/2, contact_l, t]);
+                translate([pcb_w - 2.5+contact_l/2, i*2.5 + contact_l/2, pcb_h])
+                cylinder(d = contact_l, h = t);
+            }
+            // leds
+            led_step = pcb_w/leds_per_section;
+            led_w = 5 + c*2;
+            led_l = 5 + c*2;
+            led_h = 1.3 + c;
+            led_solder_l = 6.2 + c*2;
+            for (i = [0:leds_per_section-1]) {
+                translate([i*led_step + led_step/2 - led_w/2, (pcb_l - led_l)/2, pcb_h]) {
+                    color("white")
+                    cube([led_w, led_l, led_h]);
+                    color("silver")
+                    translate([t, -(led_solder_l - led_l)/2, 0])
+                    cube([led_w - t*2, led_solder_l, 1]);
+                }
+            }
+            // spacing for resistors
+            color([0.5, 0.5, 0.5, 0.5]) {
+                translate([12, -t, pcb_h])
+                cube([8.5, pcb_l+t*2, 0.8]);
+                translate([29, -t, pcb_h])
+                cube([8.5, pcb_l+t*2, 0.8]);
+            }
+        }
+    }
+}
+
 //board_5v(false);
 //nanopi_neo_air(false);
+//led_stripe_60(2);
