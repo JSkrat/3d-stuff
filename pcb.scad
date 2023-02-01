@@ -1,5 +1,5 @@
 /*t = 0.05;
-tolerance = 0.2;
+clearance = 0.2;
 wall = 1;
 $fn = 45;
 layer = 0.25;//*/
@@ -8,9 +8,9 @@ include <shapes.scad>;
 /// CJ-0802
 /// https://arduino.ua/prod3850-plata-bloka-pitaniya-5v-2a
 module board_5v(positive) {
-    w = 64 + tolerance*2;
-    d = 32.50 + tolerance*2;
-    h = 1 + tolerance;
+    w = 64 + clearance*2;
+    d = 32.50 + clearance*2;
+    h = 1 + clearance;
     glue_space = 3;
     support_l = 8;
     support_w = 0.8;
@@ -31,13 +31,13 @@ module board_5v(positive) {
         translate([glue_space, glue_space, rise]) {
             color("#EEA")
             difference() {
-                rounded_square_prism(w, d, h + tolerance, 3.5);
+                rounded_square_prism(w, d, h + clearance, 3.5);
                 translate([-t, 28.7, -t])
-                cube([6.2 + t, 3.8 + tolerance*2 + t, h + tolerance + t*2]);
+                cube([6.2 + t, 3.8 + clearance*2 + t, h + clearance + t*2]);
             }
             // markings
             color("black")
-            translate([0, 0, h + tolerance])
+            translate([0, 0, h + clearance])
             linear_extrude(t) {
                 translate([6.5, 24.8])
                 text("+  –", 4);
@@ -57,7 +57,7 @@ module board_5v(positive) {
                 cube([5.7, 6, 2 + t*2]);
             }
             // now some components
-            translate([0, 0, h + tolerance]) {
+            translate([0, 0, h + clearance]) {
                 // transformer
                 translate([19, 5, 0]) {
                     color("blue")
@@ -221,13 +221,18 @@ module amplifier_pam8403() {
     cube([5.4, 2.54, t]);
 }
 
+led_stripe_60_l = 10;
+led_stripe_60_w = 50;
+// led+pcb height
+led_stripe_60_h = 1.5;
 module led_stripe_60(sections, real) {
-    c = (real)? 0: tolerance;
+    c = (real)? 0: clearance;
     // 60 leds per meter, 3 leds per section
     leds_per_section = 3;
     pcb_h = 0.2;
-    pcb_l = 10 + c*2;
-    pcb_w = 50;
+    pcb_l = led_stripe_60_l + c*2;
+    pcb_w = led_stripe_60_w;
+    solder_h = 1.0;
     for (section = [0:sections-1]) {
         translate([pcb_w*section, 0, 0]) {
             // pcb
@@ -235,16 +240,17 @@ module led_stripe_60(sections, real) {
             cube([pcb_w, pcb_l, pcb_h]);
             // contacts
             contact_l = 1.8;
+            contact_y_offset = 0.2;
             color("gold")
             for (i = [0:3]) {
-                translate([0, i*2.5, pcb_h])
-                cube([2.5-contact_l/2, contact_l, t]);
-                translate([2.5-contact_l/2, i*2.5 + contact_l/2, pcb_h])
-                cylinder(d = contact_l, h = t);
-                translate([pcb_w - 2.5+contact_l/2, i*2.5, pcb_h])
-                cube([2.5-contact_l/2, contact_l, t]);
-                translate([pcb_w - 2.5+contact_l/2, i*2.5 + contact_l/2, pcb_h])
-                cylinder(d = contact_l, h = t);
+                translate([0, i*2.5 + contact_y_offset, pcb_h-t])
+                cube([2.5-contact_l/2, contact_l, solder_h+t]);
+                translate([2.5-contact_l/2, i*2.5 + contact_l/2 + contact_y_offset, pcb_h-t])
+                cylinder(d = contact_l, h = solder_h+t);
+                translate([pcb_w - 2.5+contact_l/2, i*2.5 + contact_y_offset, pcb_h-t])
+                cube([2.5-contact_l/2+t, contact_l, solder_h+t]);
+                translate([pcb_w - 2.5+contact_l/2, i*2.5 + contact_l/2 + contact_y_offset, pcb_h-t])
+                cylinder(d = contact_l, h = solder_h+t);
             }
             // leds
             led_step = pcb_w/leds_per_section;
@@ -253,20 +259,20 @@ module led_stripe_60(sections, real) {
             led_h = 1.3 + c;
             led_solder_l = 6.2 + c*2;
             for (i = [0:leds_per_section-1]) {
-                translate([i*led_step + led_step/2 - led_w/2, (pcb_l - led_l)/2, pcb_h]) {
+                translate([i*led_step + led_step/2 - led_w/2, (pcb_l - led_l)/2, pcb_h-t]) {
                     color("white")
-                    cube([led_w, led_l, led_h]);
+                    cube([led_w, led_l, led_h+t]);
                     color("silver")
                     translate([t, -(led_solder_l - led_l)/2, 0])
-                    cube([led_w - t*2, led_solder_l, 1]);
+                    cube([led_w - t*2, led_solder_l, 1+t]);
                 }
             }
             // spacing for resistors
             color([0.5, 0.5, 0.5, 0.5]) {
-                translate([12, -t, pcb_h])
-                cube([8.5, pcb_l+t*2, 0.8]);
-                translate([29, -t, pcb_h])
-                cube([8.5, pcb_l+t*2, 0.8]);
+                translate([12, -t, pcb_h-t])
+                cube([8.5, pcb_l+t*2, 0.8+t]);
+                translate([29, -t, pcb_h-t])
+                cube([8.5, pcb_l+t*2, 0.8+t]);
             }
         }
     }
