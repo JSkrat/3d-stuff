@@ -34,14 +34,13 @@ module screw_40_15(positive) {
     }
 }
 
-screw_25_10_h_bushing_d = 8;
-screw_25_10_h_bushing_h = 11 - wall-tolerance*0;
-module screw_25_10_h(positive) {
+screw_25_h_bushing_d = 8;
+module _screw_25_h(positive, l) {
     if (positive) {
         mirror([0, 0, 1])
         color("#444")
         translate([0, 0, wall+tolerance*0])
-        cylinder(d = screw_25_10_h_bushing_d, h = screw_25_10_h_bushing_h);
+        cylinder(d = screw_25_h_bushing_d, h = l - wall-tolerance*0);
     } else {
         color("#DE8") {
             mirror([0, 0, 1]) {
@@ -50,10 +49,25 @@ module screw_25_10_h(positive) {
                 cylinder(d1 = 4.8, d2 = 2.8, h = 1.4 + t*2);
                 translate([0, 0, 1.4])
                 cylinder(d1 = 2.8, d2 = 2.0, h = 1.11);
-                cylinder(h = 10, d = 1.5 + tolerance*2);        
+                // d 1.5 is thread hole, less than thread diameter for thread to cut
+                cylinder(h = l-1.5, d = 1.5 + tolerance*2);
             }
         }
     }
+}
+
+screw_25_10_h_bushing_d = screw_25_h_bushing_d;
+screw_25_10_h_bushing_h = 11.5 - wall-tolerance*0;
+screw_25_10_h_thread_d = 2.5;
+module screw_25_10_h(positive) {
+    _screw_25_h(positive, 11.5);
+}
+
+screw_25_16_h_bushing_d = screw_25_h_bushing_d;
+screw_25_16_h_bushing_h = 16 - wall-tolerance*0;
+screw_25_16_h_thread_d = 2.5;
+module screw_25_16_h(positive) {
+    _screw_25_h(positive, 16);
 }
 
 screw_25_16_bushing_d = 8;

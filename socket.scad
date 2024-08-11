@@ -146,6 +146,22 @@ module socket_5v(positive) {
     }
 }
 
+module wb5521(positive) {
+    if (positive) {
+    } else {
+        color("silver")
+        cylinder(d = 12.5, h = 2);
+        mirror([0, 0, 1]) {
+            color("silver")
+            // inner diameter of a washer
+            translate([0, 0, -t])
+            cylinder(d = 11.1, h = 14.4+t);
+            color([1, 1, 1, 0.5])
+            cylinder(d = 11, h = 9.7+14.4);
+        }
+    }
+}
+
 lamp_socket_w = 44;
 lamp_socket_d = 83.5;
 module lamp_socket(positive) {
@@ -215,3 +231,5 @@ module wago221(positive) {
 }
 
 //wago221(false);
+//socket_5v(false);
+//wb5521(false);
