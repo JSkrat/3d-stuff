@@ -420,13 +420,17 @@ module usb_ttl_ch340(positive, light_d = 0) {
     // pcb
     color([0.2, 0.2, 0.2])
     translate([-c, -c, -1.6-c])
-    cube_print_sharp_corners([30+c*2, 15.6+c*2, 1.6+c*2], 1, true);
+    cube_print_sharp_corners([30+c*2, 15.6+c*2, 1.6+c*2], 1+c*2, true);
     // usb
     color("silver")
     translate([-16-c, 1.8-c, -0.75-c]) {
-        cube_print_sharp_corners([19+c*2, 12+c*2, 4.5+c*2], 1, true);
+        cube_print_sharp_corners([19+c*2, 12+c*2, 4.5+c*2], 1+c*2, true);
+        // usb-female
         translate([0, -1.5, -1.3])
         cube([10+c*2, 15+c*2, 7.1+c*2]);
+        // socket wires
+        translate([18.7-c, 2.25-c, 0-c])
+        cube([2.1+c*2, 7.5+c*2, 1.8+c*2]);
     }
     // ttl connector (angled)
     translate([27.7-c, 0.3-c, 0-c]) {
