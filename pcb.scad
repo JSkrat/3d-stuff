@@ -281,40 +281,40 @@ module led_stripe_60(sections, real) {
 
 
 // single, 2.54 step, straight
-module pls_254(n, pin_centered) {
+module pls_254(n, pin_centered = false, with_spacing = true, simplified = true) {
     w = 2.54;
     offset = (pin_centered)? w/2: 0;
-    translate([-offset, -offset, 0])
-    for (i = [0:n-1]) {
-        translate([w*i, 0, 0]) {
+    translate([-offset, -offset, 0]) {
+        if (simplified) {
+            // insulator
             color([0.25, 0.25, 0.25])
-            rounded_square_prism(w, w, 2.54, 0.5);
-            translate([w/2, w/2, -3.2])
+            rounded_rectangle_prism([w*n, w, 2.54], 0.5);
+            // pin
+            d = 0.8;
+            translate([w/2-d/2, w/2-d/2, -3.2])
             color("gold")
-            rotate(45, [0, 0, 1])
-            cylinder(d = 0.8, h = 11, $fn=4);
+            cube([2.54*n-w+d, d, 11]); 
+        } else {
+            for (i = [0:n-1]) {
+                translate([w*i, 0, 0]) {
+                    // insulator
+                    color([0.25, 0.25, 0.25])
+                    rounded_rectangle_prism([w, w, 2.54], 0.5);
+                    // pin
+                    translate([w/2, w/2, -3.2])
+                    color("gold")
+                    rotate(45, [0, 0, 1])
+                    cylinder(d = 0.8, h = 11, $fn=4);
+                }
+            }
+        }
+        // spacing
+        if (with_spacing) {
+            color([1, 1, 1, 0.5])
+            translate([-t, -t, -3.2-t])
+            cube([2.54*n+t*2, 2.54+t*2, 11+t*2]);
         }
     }
-}
-
-module lipo_501240(for_difference) {
-    c = (for_difference)? clearance: 0;
-    translate([-c, -c, -c])
-    color("yellow")
-    cube([6+c, 12+c*2, 5+c*2]);
-    translate([6-t, -c, -c])
-    color("silver")
-    cube([36.5+c+t, 12+c*2, 5+c*2]);
-    // wires
-    wire_d = 1;
-    translate([wire_d/2, 0, wire_d/2+1.5])
-    rotate(90, [1, 0, 0])
-    color("black")
-    cylinder(d = wire_d+c*2, h = 1);
-    translate([wire_d/2, 0, wire_d/2+2.5])
-    rotate(90, [1, 0, 0])
-    color("red")
-    cylinder(d = wire_d+c*2, h = 1);
 }
 
 module lipo_charger_4056_typec_prot(for_difference) {
@@ -476,4 +476,4 @@ module usb_ttl_ch340(positive, light_d = 0) {
 //led_stripe_60(2);
 //lipo_charger_4056_typec_prot(false); translate([0, 20, 0]) lipo_charger_4056_typec_prot(true);
 //usb_ttl_ch340(true, 3);
-
+//pls_254(28, true);

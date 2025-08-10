@@ -16,6 +16,7 @@ $fn = 45; //*/
 /// threadD is thread diameter, in mm (for M4 it is just 4)
 /// headD is head diameter, in 1/10mm
 /// headH is head height, in 1/10mm, from inner flat surface to the upper most part
+tolerance = clearance;
 
 module screw_40_15(positive) {
     if (positive) {

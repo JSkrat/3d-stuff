@@ -1,5 +1,6 @@
 
 
+// legacy naming
 module rounded_square_prism(w, l, h, r) {
     for (x = [r, w-r], y = [r, l-r]) {
         translate([x, y, 0])
@@ -9,6 +10,10 @@ module rounded_square_prism(w, l, h, r) {
     cube([w-r*2, l, h]);
     translate([0, r, 0])
     cube([w, l-r*2, h]);
+}
+
+module rounded_rectangle_prism(size, r) {
+    rounded_square_prism(size.x, size.y, size.z, r);
 }
 
 module rounded_square(w, l, h, r) {
@@ -45,6 +50,10 @@ module rounded_square(w, l, h, r) {
     else resize([w, l, h]) _rounded_square(min_size, r);
 }
 
+module rounded_rectangle(size, r) {
+    rounded_square(size.x, size.y, size.z, r);
+}
+
 module cube_print_sharp_corners(size, d, draw_body=false) {
     for (x = [0, size.x], y = [0, size.y]) {
         translate([x, y, 0])
@@ -64,6 +73,26 @@ module cube_print_negative_sharp_corners(size, r) {
         }
     }
 }
+
+// cylinder of bigger than requested diameter with *number* incursions to the requested *d*iameter
+module petals_hole(d, number) {
+    // i failed to solve dependency for fixed distance between circles
+    // but that random approximation is decent enough to avoid circle intersection
+    border = d/number^2.5*20;
+    //translate([-d/2-border, -d/2-border, 0])
+    difference() {
+        //rounded_square_prism(d+border*2, d+border*2, plate_h+t*2, border/2);
+        cylinder(d = d+border, h = plate_h+t*2);
+        for (a = [0: 360/number: 360]) {
+            rotate(a, [0, 0, 1])
+            translate([0, d/2+border/2, 0])
+            cylinder(d = border, h = plate_h+t*2);
+        }
+    }
+}
+
+function corners_rotate(w, l) = [[0, 0, 0], [w, 0, 90], [w, l, 180], [0, l, 270]];
+
 /*$fn=30;
 rounded_square(100, 100, 2.2, 2);
 /*translate([110, 0, 0])
