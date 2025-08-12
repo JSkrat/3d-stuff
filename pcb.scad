@@ -471,9 +471,106 @@ module usb_ttl_ch340(positive, light_d = 0) {
         }
     }
 }
+
+module pir_mh(positive) {
+    c = (positive)? 0: clearance;
+    pcb_size = [24.3+c*2, 32.6+c*2, 1.5+c*2];
+    // pcb
+    color("blue")
+    translate([-c, -c, -c])
+    difference() {
+        cube_print_sharp_corners(pcb_size, 1.5, true);
+        translate([pcb_size.x/2, 1.8, -t]) cylinder(d = 2-c*2, h = pcb_size.z+t*2);
+        translate([pcb_size.x/2, pcb_size.y - 1.8, -t]) cylinder(d = 2-c*2, h = pcb_size.z+t*2);
+    }
+    // lens dome
+    // height clearance already accounted for in pcb size height
+    lens_base_size = [23.2+c*2, 23.2+c*2, 3.3];
+    lens_r = 11.6+c;
+    color([0.9, 0.9, 0.9, 0.8])
+    translate([pcb_size.x/2 - lens_base_size.x/2-c, pcb_size.y/2 - lens_base_size.y/2-c, pcb_size.z-c]) {
+        cube(lens_base_size);
+        intersection() {
+            cube([lens_base_size.x, lens_base_size.y, lens_base_size.z + lens_r]);
+            translate([lens_base_size.x/2, lens_base_size.y/2, lens_base_size.z])
+            sphere(r = lens_r);
+        }
+    }
+    // front soldering
+    sol_h = 1.4;
+    color("silver") 
+    translate([0, 0, pcb_size.z-c]) {
+        translate([pcb_size.x - 0.75-c, pcb_size.y - 1-c]) rotate(180, [0, 0, 1]) cube([7.75+c*2, 1.5+c*2, sol_h]);
+        translate([1-c, pcb_size.y-3-c*2-c]) cube([1+c*2, 3+c*2, sol_h]);
+        translate([0.5-c, 1-c]) cube([3.5+c*2, 1.5+c*2, sol_h]);
+        translate([pcb_size.x-0.5-3.5-c*2-c, 1-c]) cube([3.5+c*2, 1.5+c*2, sol_h]);
+    }
+    // back side
+    translate([-c, -c, -c])
+    mirror([0, 0, 1]) {
+        // back soldering
+        bsol_h = 1.7;
+        color([1, 1, 1, 0.5])
+        difference() {
+            cube([pcb_size.x, pcb_size.y, bsol_h+c]);
+            // cutouts for mount holes
+            translate([pcb_size.x/2, 1.8, -t]) cylinder(d = 3, h = bsol_h+c*2+t*2);
+            translate([pcb_size.x/2, pcb_size.y-1.8, -t]) cylinder(d = 3, h = bsol_h+c*2+t*2);
+        }
+        // parts
+        caps_pos = [
+            [0, 0], [0, pcb_size.y-6], [pcb_size.x-6, 0], [pcb_size.x-6, 22.3]
+        ];
+        for (cap_pos = caps_pos) {
+            color([0.2, 0.2, 0.2])
+            translate([cap_pos.x, cap_pos.y, 0]) cube([6, 6, 9]);
+        }
+        // connector
+        color("red")
+        translate([0, 12.3, 0])
+        cube([3, 9, 20]);
+        // jumper
+        color([0.9, 0.9, 0.5])
+        translate([pcb_size.x - 9.2, pcb_size.y - 4, 0])
+        cube([9.2, 4, 10]);
+        // setup pots
+        color("orange")
+        translate([pcb_size.x - 6.7, 6, 0])
+        cube([6.7, 16, 9]);
+        // blurring to avoid unnecessary thin walls between components
+        color([1, 1, 1, 0.5]) {
+            translate([0, 0, 0])
+            cube([6, pcb_size.y, 9]);
+            translate([pcb_size.x - 9.2, 0, 0])
+            cube([9.2, pcb_size.y, 10]);
+        }        
+    }
+}
+
+
+module power_na01_t2sxx(no_clearance) {
+    c = (no_clearance)? 0: clearance;
+    // pcb
+    color("green")
+    translate([-c, -c, -c])
+    cube([26.2+c*2, 24+c*2, 0.9+c*2]);
+    // parts
+    color([1, 1, 1, 0.5])
+    translate([0.5-c, 0.5-c, -2.5-c])
+    cube([25+c*2, 23.6+c*2, 12+c*2]);
+    // pins
+    pins = [1.8, 7, 21.3, 24];
+    for (xi = pins) {
+        color("gold")
+        translate([xi, 0, 2-c])
+        rotate(90, [1, 0, 0])
+        cylinder(d = 1, h = 8.5, $fn=4);
+    }
+}
 //board_5v(false);
 //nanopi_neo_air(false);
 //led_stripe_60(2);
 //lipo_charger_4056_typec_prot(false); translate([0, 20, 0]) lipo_charger_4056_typec_prot(true);
 //usb_ttl_ch340(true, 3);
 //pls_254(28, true);
+//power_na01_t2sxx(true);
